@@ -30,13 +30,40 @@ define Build/append-ls-rootfs-ext4
 	dd if=$(KDIR)/$(word 1,$(1))-$(word 2,$(1)).root.ext4 >> $@
 endef
 
+define Build/copy-fit-dtb
+	$(call Image/BuildDTB,$(DTS_DIR)/$(1).dts,$(DTS_DIR)/$(1).dtb)
+	dd if=$(DTS_DIR)/$(1).dtb of=$(IMAGE_KERNEL).dtb
+endef
+
+# $(1): FIT name/description
+#define Build/fit
+#echo "Build/fit: $@"
+#env
+
+#./mkits.sh \
+	#-D $(1) -o $@.its -k $@ -d $(IMAGE_KERNEL).dtb \
+	#-C gzip -a $(KERNEL_LOADADDR) -e $(KERNEL_ENTRY_POINT) -f $(FDT_LOADADDR) \
+	#-A arm64 -v $(LINUX_VERSION) 
+
+	#PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@
+#endef
+
+define Build/fit-ramdisk
+echo "RAMDISK: $@"
+./mkits.sh \
+	-D $(1) -o $@.its -k $(IMAGE_KERNEL) -d $(IMAGE_KERNEL).dtb \
+	-C gzip -a $(KERNEL_LOADADDR) -e $(KERNEL_ENTRY_POINT) -f $(FDT_LOADADDR) \
+	-A arm64 -v $(LINUX_VERSION) -r $(IMAGE_ROOTFS) -z gzip
+
+	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@
+endef
+
 define Device/Default
   PROFILES = Default
   FILESYSTEMS := squashfs
   KERNEL := kernel-bin | gzip | uImage gzip
   DEVICE_DTS :=
   IMAGES = firmware.bin
-
 ifeq ($(SUBTARGET),64b)
   KERNEL_LOADADDR = 0x80080000
   KERNEL_ENTRY_POINT = 0x80080000
@@ -45,6 +72,7 @@ ifeq ($(SUBTARGET),32b)
   KERNEL_LOADADDR = 0x80008000
   KERNEL_ENTRY_POINT = 0x80008000
 endif
+  FDT_LOADADDR = 0x90000000
 endef
 
 define Device/ls1043ardb
@@ -61,6 +89,27 @@ endif
   					append-kernel | pad-to 10M | append-rootfs | pad-rootfs | check-size 67108865
 endef
 TARGET_DEVICES += ls1043ardb
+
+
+define Device/traverse-five64
+  KERNEL_NAME := Image dtbs
+  #FILESYSTEMS :=
+  FILESYSTEMS += ubifs
+  DEVICE_TITLE := traverse-five64-$(SUBTARGET)
+  DEVICE_PACKAGES += rcw-layerscape-ls1043ardb uboot-traverse-$(SUBTARGET) uboot-traverse-$(SUBTARGET)-sdcard fman-layerscape-ls1043ardb
+  DEVICE_DTS = freescale/traverse-ls1043v
+  KERNEL := kernel-bin | gzip | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb $$(FDT_LOADADDR)
+  IMAGES = kernel.itb root sysupgrade.tar
+  IMAGE/kernel.itb = append-kernel
+  IMAGE/root = append-rootfs
+  #ifeq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),y)
+  #IMAGES += kernel-ramdisk.itb
+  #IMAGE/kernel-ramdisk.itb = copy-fit-dtb $$(DEVICE_DTS) | fit-ramdisk $(1)
+  #endif
+  IMAGE/sysupgrade.tar = sysupgrade-tar
+  UBIFS_OPTS := -m 2048 -e 124KiB -c 4096
+endef
+TARGET_DEVICES += traverse-five64
 
 define Device/ls1046ardb
   DEVICE_TITLE := ls1046ardb-$(SUBTARGET)
@@ -118,6 +167,7 @@ endif
   IMAGE/firmware.bin = append-ls-dtb $$(DEVICE_DTS) | pad-to 1M | append-kernel | pad-to 6M | \
 					append-rootfs | pad-rootfs | check-size 24117249
 endef
+
 TARGET_DEVICES += ls2088ardb
 
 $(eval $(call BuildImage))

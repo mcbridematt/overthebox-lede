@@ -17,4 +17,4 @@ define KernelPackage/ppfe/description
  Kernel modules for Freescale PPFE Driver support.
 endef
 
-$(eval $(call KernelPackage,ppfe))
+#$(eval $(call KernelPackage,ppfe))

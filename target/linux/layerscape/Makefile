@@ -11,7 +11,7 @@ BOARDNAME:=NXP Layerscape
 DEVICE_TYPE:=developerboard
 KERNEL_PATCHVER:=4.4
 KERNELNAME:=Image dtbs
-FEATURES:=squashfs nand usb pcie gpio
+FEATURES:=squashfs nand usb pcie gpio ubifs
 SUBTARGETS:=64b 32b
 MAINTAINER:=Jiang Yutang <jiangyutang1978@gmail.com>
 
@@ -21,6 +21,6 @@ define Target/Description
 	Build firmware images for $(BOARDNAME) SoC devices.
 endef
 
-DEFAULT_PACKAGES += kmod-usb3 kmod-usb-dwc3 kmod-usb-storage
+DEFAULT_PACKAGES += kmod-usb3 kmod-usb-dwc3 kmod-usb-storage uboot-envtools
 
 $(eval $(call BuildTarget))

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Reorder ethernet interfaces to match the physical order
+ip link set eth2 name fm1-mac3
+ip link set eth4 name eth2
+ip link set eth3 name fm1-mac4
+ip link set eth5 name eth3
+ip link set fm1-mac3 name eth4
+ip link set fm1-mac4 name eth5

@@ -1,4 +1,6 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
-modprobe pfe.ko
+echo 378 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio378/direction
+echo 0 > /sys/class/gpio/gpio378/value
 exit 0
