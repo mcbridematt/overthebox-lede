@@ -276,6 +276,7 @@ $(eval $(call KernelPackage,usb-ssb))
 define KernelPackage/usb2
   TITLE:=Support for USB2 controllers
   DEPENDS:=\
+	@!TARGET_layerscape \
 	+TARGET_brcm47xx:kmod-usb-bcma \
 	+TARGET_brcm47xx:kmod-usb-ssb \
 	+TARGET_bcm53xx:kmod-usb-bcma \
@@ -1399,6 +1400,7 @@ XHCI_AUTOLOAD := $(patsubst $(LINUX_DIR)/drivers/usb/host/%.ko,%,$(XHCI_FILES))
 define KernelPackage/usb3
   TITLE:=Support for USB3 controllers
   DEPENDS:= \
+	@!TARGET_layerscape \
 	+TARGET_bcm53xx:kmod-usb-bcma \
 	+TARGET_bcm53xx:kmod-phy-bcm-ns-usb3
   KCONFIG:= \
