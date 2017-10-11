@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 BOARD:=layerscape
 BOARDNAME:=NXP Layerscape
 KERNEL_PATCHVER:=4.9
-FEATURES:=squashfs nand usb pcie gpio
+FEATURES:=squashfs nand usb pcie gpio ubifs
 SUBTARGETS:=armv8_64b armv8_32b
 MAINTAINER:=Yangbo Lu <yangbo.lu@nxp.com>
 
