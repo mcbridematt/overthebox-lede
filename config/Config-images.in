@@ -181,7 +181,7 @@ menu "Target Images"
 
 	config GRUB_IMAGES
 		bool "Build GRUB images (Linux x86 or x86_64 host only)"
-		depends on TARGET_x86
+		depends on TARGET_x86 || TARGET_armvirt
 		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_ISO || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS
 		select PACKAGE_grub2
 		default y
@@ -237,6 +237,12 @@ menu "Target Images"
 		select TARGET_IMAGES_PAD
 		select PACKAGE_kmod-e1000
 
+	config EFI_IMAGES 
+		bool "Build UEFI/VM images"
+		depends on TARGET_armvirt
+		select GRUB_IMAGES
+		select TARGET_ROOTFS_EXT4FS
+	
 	config TARGET_IMAGES_PAD
 		bool "Pad images to filesystem size (for JFFS2)"
 		depends on GRUB_IMAGES
@@ -254,6 +260,7 @@ menu "Target Images"
 		int "Kernel partition size (in MB)"
 		depends on GRUB_IMAGES
 		default 16
+		default 32 if EFI_IMAGES
 
 	config TARGET_ROOTFS_PARTSIZE
 		int "Root filesystem partition size (in MB)"
