@@ -9,12 +9,13 @@ include $(TOPDIR)/rules.mk
 BOARD:=armvirt
 BOARDNAME:=QEMU ARM Virtual Machine
 FEATURES:=fpu pci rtc usb
-FEATURES+=cpiogz ext4 ramdisk squashfs targz
+FEATURES+=cpiogz ext4 ramdisk squashfs targz qcow
 MAINTAINER:=Florian Fainelli <f.fainelli@gmail.com>, \
 	Yousong Zhou <yszhou4tech@gmail.com>
 
 KERNEL_PATCHVER:=4.9
 
+#KERNEL_NAME:=bzImage 
 include $(INCLUDE_DIR)/target.mk
 
 $(eval $(call BuildTarget))
