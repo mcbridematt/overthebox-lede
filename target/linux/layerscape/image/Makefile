@@ -67,6 +67,7 @@ ifeq ($(SUBTARGET),armv8_32b)
   KERNEL_LOADADDR = 0x80008000
   KERNEL_ENTRY_POINT = 0x80008000
 endif
+  FDT_LOADADDR = 0x90000000
 endef
 
 define Device/ls1043ardb
@@ -166,5 +167,27 @@ define Device/ls2088ardb
 endef
 TARGET_DEVICES += ls2088ardb
 endif
+
+define Device/traverse-five64
+  KERNEL_NAME := Image
+  KERNEL_SUFFIX := -kernel.itb
+  KERNEL_INSTALL := 1
+  FILESYSTEMS := ubifs
+  DEVICE_TITLE := Traverse LS1043 Boards (Five64, LS1043S)
+  DEVICE_PACKAGES += fman-layerscape-ls1043ardb kmod-i2c-core kmod-rtc-isl1208 uboot-envtools \
+	uboot-traverse-ls1043v uboot-traverse-ls1043v-sdcard \
+	kmod-hwmon-core kmod-hwmon-ltc2990 kmod-gpio-pca953x kmod-input-gpio-keys-polled
+  DEVICE_DESCRIPTION = Build images for Traverse LS1043 boards. This generates a single image \
+  	capable of booting on any of the boards in this family.
+  DEVICE_DTS = freescale/traverse-ls1043v
+  DEVICE_DTS_DIR = $(LINUX_DIR)/arch/arm64/boot/dts
+  KERNEL := kernel-bin | gzip | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb $$(FDT_LOADADDR)
+  KERNEL_INITRAMFS := kernel-bin | gzip | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb $$(FDT_LOADADDR)
+  IMAGES = root sysupgrade.tar
+  IMAGE/root = append-rootfs
+  IMAGE/sysupgrade.tar = sysupgrade-tar
+  UBIFS_OPTS := -m 2048 -e 124KiB -c 4096
+endef
+TARGET_DEVICES += traverse-five64
 
 $(eval $(call BuildImage))
