@@ -85,11 +85,22 @@ define Image/Build/efi
                 $(CONFIG_TARGET_ROOTFS_PARTSIZE) $(KDIR)/root.$(1) \
 		$(BOOT_SIGNATURE) \
                 256
+	
+	rm "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpi-$(1).img" || true
+
 	dd if=/dev/zero of="$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img" bs=512 count=1024 conv=notrunc oflag=append
 	sgdisk -g "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
 	sgdisk -t 1:EF00 "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
 	sgdisk -u 2:$(EFI_SIGNATURE) "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
 	sgdisk -h "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
+	
+	rm "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).qcow2" || true
+
+	qemu-img convert -f raw -O qcow2 "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img" "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).qcow2"
+	
+	rm "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img.gz" || true
+
+	gzip -9n "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
 endef
 endif
 
