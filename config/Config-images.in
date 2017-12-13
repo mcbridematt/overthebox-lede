@@ -195,6 +195,7 @@ menu "Target Images"
 	config GRUB_SERIAL
 		string "Serial port device"
 		depends on GRUB_IMAGES
+		default "ttyAMA0" if TARGET_armvirt
 		default "hvc0" if TARGET_x86_xen_domu
 		default "ttyS0" if ! TARGET_x86_xen_domu
 
