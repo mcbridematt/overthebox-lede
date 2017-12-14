@@ -62,7 +62,7 @@ define Image/Build/efi
 	-e 's#@BOOT_UUID@#$(strip $(BOOT_SIGNATURE))#g' \
 	./grub-early.cfg > $(KDIR)/grub-early.cfg
 
-	 grub-mkimage \
+	$(STAGING_DIR_HOST)/bin/grub-mkimage \
 		-p "/grub" \
                 -d $(STAGING_DIR_HOST)/lib/grub/arm64-efi \
                 -o $(KDIR)/root.grub/EFI/boot/bootaa64.efi \
@@ -89,10 +89,10 @@ define Image/Build/efi
 	rm "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpi-$(1).img" || true
 
 	dd if=/dev/zero of="$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img" bs=512 count=1024 conv=notrunc oflag=append
-	sgdisk -g "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
-	sgdisk -t 1:EF00 "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
-	sgdisk -u 2:$(EFI_SIGNATURE) "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
-	sgdisk -h "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
+	$(STAGING_DIR_HOST)/bin/sgdisk -g "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
+	$(STAGING_DIR_HOST)/bin/sgdisk -t 1:EF00 "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
+	$(STAGING_DIR_HOST)/bin/sgdisk -u 2:$(EFI_SIGNATURE) "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
+	$(STAGING_DIR_HOST)/bin/sgdisk -h "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).img"
 	
 	rm "$(BIN_DIR)/$(IMG_PREFIX)-uefi-gpt-$(1).qcow2" || true
 
