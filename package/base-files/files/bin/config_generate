@@ -66,6 +66,11 @@ generate_network() {
 	json_select ..
 
 	[ -n "$ifname" ] || return
+	
+	# hack - return the original switch behavior on this device
+	case "$1:$ifname" in
+		*\ * | lan:*) type="bridge" ;;
+	esac
 
 	case "$1" in
 		# hack (see /etc/board.d/02_network)
