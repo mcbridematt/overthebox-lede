@@ -12,7 +12,7 @@ FEATURES:=fpu pci rtc usb
 FEATURES+=ext4 ramdisk targz
 MAINTAINER:=Mathew McBride <matt@bionicmessage.net>
 SUBTARGETS:=64
-KERNEL_PATCHVER:=4.14
+KERNEL_PATCHVER:=4.9
 
 include $(INCLUDE_DIR)/target.mk
 
